@@ -3,9 +3,8 @@ import os
 import pandas as pd
 from github import Github
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -28,16 +27,16 @@ def subir_csv_atualizado(g):
     file = repo.get_contents(FILE_PATH)
     with open("processos_prioritarios.csv", "r", encoding="utf-8") as f:
         content = f.read()
-    repo.update_file(FILE_PATH, "Atualização automática SIGED", content, file.sha)
+    repo.update_file(FILE_PATH, "Atualização automática SIGED (via Chrome Headless)", content, file.sha)
 
 def atualizar_dados_siged():
     df = pd.read_csv("processos_prioritarios.csv")
     options = Options()
     options.add_argument("--headless")
-    options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
-    service = EdgeService(executable_path="msedgedriver.exe")
-    driver = webdriver.Edge(service=service, options=options)
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, 15)
 
     try:
